@@ -1,0 +1,26 @@
+varnishtest "Test chromelogger vmod"
+
+server s1 {
+       rxreq
+       txresp
+} -start
+
+varnish v1 -vcl+backend {
+    import chromelogger from "${vmod_topbuild}/src/.libs/libvmod_chromelogger.so";
+
+    sub vcl_deliver {
+        chromelogger.log("So long, and thanks for all the fish");
+        set resp.http.X-ChromeLogger-Data = chromelogger.collect();
+    }
+
+} -start
+
+client c1 {
+    txreq -url "/"
+    rxresp
+
+    ### utility functions
+    expect resp.http.X-ChromeLogger-Data == eyJ2ZXJzaW9uIjogIjAuMiIsImNvbHVtbnMiOiBbImxvZyIsICJiYWNrdHJhY2UiLCAidHlwZSJdLCJyb3dzIjogW1tbIlNvIGxvbmcsIGFuZCB0aGFua3MgZm9yIGFsbCB0aGUgZmlzaCJdLCJGSVhNRSIsImxvZyJdXX0=
+}
+
+client c1 -run

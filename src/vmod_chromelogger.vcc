@@ -1,0 +1,3 @@
+Module chromelogger
+Function VOID log(STRING)
+Function STRING collect()
