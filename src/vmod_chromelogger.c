@@ -63,7 +63,6 @@ vmod_log(struct sess *sp, const char *s) {
 
         // Ignore empty lines
 	if (strlen(s) == 0) {
-                VSL(SLT_Debug, 0, "vmod-chromelogger: Not adding log entry, strlen -> 0");
 		return;
 	}
 
@@ -75,8 +74,6 @@ vmod_log(struct sess *sp, const char *s) {
         strcpy(newentry->backtrace, "FIXME");
         newentry->type = LOG;
 
-        VSL(SLT_Debug, 0, "vmod-chromelogger: Insert new entry.");
-        VSL(SLT_Debug, 0, "vmod-chromelogger: List empty: %d", VTAILQ_EMPTY(&logentries));
 	VTAILQ_INSERT_TAIL(&logentries, newentry, list);
 }
 
@@ -95,7 +92,6 @@ vmod_collect(struct sess *sp) {
 	CHECK_OBJ_NOTNULL(sp, SESS_MAGIC);
 
         if (VTAILQ_EMPTY(&logentries)) {
-                VSL(SLT_Debug, 0, "vmod-chromelogger: No entries.");
                 return NULL;
         }
 
@@ -138,7 +134,6 @@ vmod_collect(struct sess *sp) {
 	v++;
 	if (v > u) {
 			WS_Release(sp->wrk->ws, 0);
-			VSL(SLT_Debug, 0, "entry-vmod: Workspace overflowed, abort");
 			return (NULL);
 	}
 	WS_Release(sp->wrk->ws, v);
